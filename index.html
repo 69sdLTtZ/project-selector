@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第二事业项目选择器 MVP</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #18202a;
+      --muted: #6b7280;
+      --line: #dfe4ea;
+      --accent: #0f766e;
+      --accent-soft: #d9f3ee;
+      --warm: #b45309;
+      --danger: #b91c1c;
+      --shadow: 0 10px 26px rgba(17, 24, 39, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(246, 247, 249, 0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 16px 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 9px 8px;
+      min-height: 40px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        padding: 12px 12px 10px;
+      }
+
+      h1 {
+        font-size: 18px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+      }
+
+      main {
+        padding: 12px;
+      }
+
+      .tabs {
+        gap: 6px;
+      }
+
+      .tab {
+        min-height: 42px;
+        padding: 8px 6px;
+        font-size: 13px;
+      }
+    }
+
+    .tab.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    @media (min-width: 760px) {
+      .grid.two {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .panel-note {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .panel-body {
+      padding: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .dimension {
+      display: grid;
+      gap: 9px;
+    }
+
+    .dimension-title {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      min-height: 40px;
+      padding: 9px 13px;
+      cursor: pointer;
+      max-width: 100%;
+    }
+
+    .chip.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: #064e45;
+      font-weight: 700;
+    }
+
+    .selection-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 6;
+      background: rgba(255, 255, 255, 0.96);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .selection-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+
+    .selected-count {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .primary {
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      min-height: 42px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .primary:disabled,
+    .secondary:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      min-height: 38px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      min-height: 42px;
+      padding: 10px 12px;
+    }
+
+    .combo {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .combo h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .combo p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .metrics {
+      display: grid;
+      gap: 10px;
+    }
+
+    @media (min-width: 760px) {
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .metric {
+      display: grid;
+      gap: 6px;
+    }
+
+    .metric label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 34px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .score {
+      font-weight: 800;
+      color: var(--accent);
+      text-align: right;
+    }
+
+    .empty {
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .result-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: #f2f4f7;
+      color: var(--muted);
+      padding: 5px 9px;
+      font-size: 12px;
+    }
+
+    .kpi {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .formula {
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .notice {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 12px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(86px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 8;
+      background: var(--text);
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 13px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .formula b {
+      color: var(--accent);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="topbar">
+        <div>
+          <h1>第二事业项目选择器 MVP</h1>
+          <p class="subtitle">按“人群 × 任务 × 痛点 × 商业模式”生成候选项目，并用 8 个指标打分排序。</p>
+        </div>
+        <nav class="tabs" aria-label="视图切换">
+          <button class="tab active" data-view="select">筛选</button>
+          <button class="tab" data-view="combos">组合</button>
+          <button class="tab" data-view="score">打分</button>
+          <button class="tab" data-view="results">结果</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="view-select">
+        <div class="notice">离线可用。发到手机后用浏览器打开，筛选和打分会保存在当前手机浏览器里。</div>
+        <div class="grid two">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">人群标签</h2>
+                <p class="panel-note">维度内尽量 MECE，维度间允许组合。</p>
+              </div>
+              <button class="secondary" data-clear="people">清空</button>
+            </div>
+            <div class="panel-body" id="peoplePanel"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">任务标签</h2>
+                <p class="panel-note">用户或组织正在试图完成的结果。</p>
+              </div>
+              <button class="secondary" data-clear="tasks">清空</button>
+            </div>
+            <div class="panel-body" id="tasksPanel"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">痛点标签</h2>
+                <p class="panel-note">任务无法顺利完成的主要阻碍。</p>
+              </div>
+              <button class="secondary" data-clear="pains">清空</button>
+            </div>
+            <div class="panel-body" id="painsPanel"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">商业模式</h2>
+                <p class="panel-note">你交付价值并收钱的方式。</p>
+              </div>
+              <button class="secondary" data-clear="models">清空</button>
+            </div>
+            <div class="panel-body" id="modelsPanel"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-combos">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">候选项目组合</h2>
+              <p class="panel-note">默认最多生成 80 个组合，避免手机端过载。你可以回到筛选页缩小范围。</p>
+            </div>
+            <button class="secondary" id="refreshCombos">刷新组合</button>
+          </div>
+          <div class="panel-body">
+            <input class="search" id="comboSearch" placeholder="搜索组合关键词，例如 AI、获客、宝妈、咨询">
+            <div id="comboList" class="result-list"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="view" id="view-score">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">项目打分</h2>
+              <p class="panel-note">先在组合页收藏候选项目，再在这里调整分数。</p>
+            </div>
+            <button class="secondary" id="clearSaved">清空收藏</button>
+          </div>
+          <div class="panel-body" id="scoreList"></div>
+        </article>
+      </section>
+
+      <section class="view" id="view-results">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">排序结果</h2>
+              <p class="panel-note">综合分越高，越值得进入访谈、验证和小规模试卖。</p>
+            </div>
+            <div class="toolbar">
+              <button class="secondary" id="exportJson">导出 JSON</button>
+              <button class="secondary" id="copyResults">复制结果</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="formula">
+              综合分 = 兴趣匹配 + 能力匹配 + 付费意愿 + 需求强度 + 获客可行性 + 回款速度 + 可持续性 - 启动成本压力
+            </div>
+            <div id="resultList" class="result-list"></div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <div class="selection-bar">
+      <div class="selection-inner">
+        <div class="selected-count" id="selectedCount">已选 0 个标签</div>
+        <button class="primary" id="goCombos">生成组合</button>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+    const DATA = {
+      people: [
+        {
+          title: "生命阶段",
+          tags: ["大学生", "职场新人", "职场中层", "中年转型者", "退休前人群", "银发老人"]
+        },
+        {
+          title: "家庭角色",
+          tags: ["单身者", "情侣/新婚", "备孕/孕产", "宝妈宝爸", "子女照护者", "家庭财务负责人"]
+        },
+        {
+          title: "职业角色",
+          tags: ["程序员", "产品经理", "设计师", "运营", "销售", "HR", "财务", "教师", "医生", "律师", "咨询顾问", "自媒体人"]
+        },
+        {
+          title: "组织角色",
+          tags: ["个体户", "小微企业主", "创业者", "部门管理者", "企业采购负责人", "一线执行者"]
+        },
+        {
+          title: "地域状态",
+          tags: ["一线城市人群", "新一线人群", "县城人群", "返乡人群", "留学生", "跨境从业者"]
+        },
+        {
+          title: "现实约束",
+          tags: ["时间极少者", "预算敏感者", "技能薄弱者", "信息弱势者", "社恐人群", "不愿露脸者"]
+        }
+      ],
+      tasks: [
+        {
+          title: "个人增收",
+          tags: ["找工作", "涨薪晋升", "转行", "副业变现", "投资理财", "个人品牌"]
+        },
+        {
+          title: "企业经营",
+          tags: ["获客", "销售转化", "客服", "招聘", "培训", "财税合规", "库存管理", "品牌营销"]
+        },
+        {
+          title: "效率提升",
+          tags: ["AI 自动化", "知识管理", "项目管理", "数据分析", "写作产出", "流程优化"]
+        },
+        {
+          title: "生活决策",
+          tags: ["买房", "装修", "保险配置", "旅游规划", "数码选购", "教育选择"]
+        },
+        {
+          title: "健康家庭",
+          tags: ["减脂塑形", "睡眠改善", "慢病管理", "心理调节", "育儿", "升学规划", "养老照护"]
+        },
+        {
+          title: "社交身份",
+          tags: ["找圈子", "人脉拓展", "表达提升", "审美提升", "兴趣活动", "影响力建设"]
+        }
+      ],
+      pains: [
+        {
+          title: "认知阻碍",
+          tags: ["不知道路径", "信息过载", "真假难辨", "缺少案例", "ROI 不清楚"]
+        },
+        {
+          title: "能力阻碍",
+          tags: ["不会做", "做不好", "缺少模板", "缺少反馈", "缺少专业判断"]
+        },
+        {
+          title: "资源阻碍",
+          tags: ["没人脉", "没渠道", "没客户", "没供应链", "找不到专家"]
+        },
+        {
+          title: "执行阻碍",
+          tags: ["太忙", "重复劳动多", "无法坚持", "缺少监督", "流程复杂"]
+        },
+        {
+          title: "心理阻碍",
+          tags: ["焦虑", "孤独", "拖延", "羞耻感", "缺少确定感"]
+        },
+        {
+          title: "交易阻碍",
+          tags: ["怕被骗", "服务不透明", "成本高", "试错贵", "怕选错"]
+        }
+      ],
+      models: [
+        {
+          title: "低成本启动",
+          tags: ["咨询服务", "陪跑教练", "课程训练营", "模板资料包", "内容广告", "社群会员"]
+        },
+        {
+          title: "产品化交付",
+          tags: ["SaaS 工具", "小程序/App", "AI Agent", "自动化工作流", "数据报告", "订阅内容"]
+        },
+        {
+          title: "交易与渠道",
+          tags: ["电商零售", "私域团购", "带货佣金", "代理分销", "平台撮合", "线索分发"]
+        },
+        {
+          title: "长期资产",
+          tags: ["个人 IP", "品牌产品", "版权授权", "加盟/SOP 授权", "项目孵化", "股权/持有"]
+        }
+      ]
+    };
+
+    const METRICS = [
+      ["interest", "兴趣匹配"],
+      ["ability", "能力匹配"],
+      ["willingness", "付费意愿"],
+      ["demand", "需求强度"],
+      ["acquisition", "获客可行性"],
+      ["cost", "启动成本压力"],
+      ["cashflow", "回款速度"],
+      ["durability", "可持续性"]
+    ];
+
+    const state = JSON.parse(localStorage.getItem("projectSelectorState") || "null") || {
+      selected: { people: [], tasks: [], pains: [], models: [] },
+      saved: []
+    };
+
+    function persist() {
+      localStorage.setItem("projectSelectorState", JSON.stringify(state));
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function renderTagPanels() {
+      renderGroup("people", "peoplePanel");
+      renderGroup("tasks", "tasksPanel");
+      renderGroup("pains", "painsPanel");
+      renderGroup("models", "modelsPanel");
+      updateCount();
+    }
+
+    function renderGroup(type, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      DATA[type].forEach(group => {
+        const wrap = document.createElement("div");
+        wrap.className = "dimension";
+        const title = document.createElement("div");
+        title.className = "dimension-title";
+        title.textContent = group.title;
+        const chips = document.createElement("div");
+        chips.className = "chips";
+        group.tags.forEach(tag => {
+          const button = document.createElement("button");
+          button.className = "chip" + (state.selected[type].includes(tag) ? " active" : "");
+          button.textContent = tag;
+          button.addEventListener("click", () => toggleTag(type, tag));
+          chips.appendChild(button);
+        });
+        wrap.append(title, chips);
+        container.appendChild(wrap);
+      });
+    }
+
+    function toggleTag(type, tag) {
+      const list = state.selected[type];
+      const index = list.indexOf(tag);
+      if (index >= 0) list.splice(index, 1);
+      else list.push(tag);
+      persist();
+      renderTagPanels();
+      renderCombos();
+    }
+
+    function updateCount() {
+      const total = Object.values(state.selected).reduce((sum, list) => sum + list.length, 0);
+      const comboCount = getCombos().length;
+      document.getElementById("selectedCount").textContent = `已选 ${total} 个标签，可生成 ${comboCount} 个组合`;
+      document.getElementById("goCombos").disabled = comboCount === 0;
+    }
+
+    function getCombos() {
+      const { people, tasks, pains, models } = state.selected;
+      if (!people.length || !tasks.length || !pains.length || !models.length) return [];
+      const combos = [];
+      for (const person of people) {
+        for (const task of tasks) {
+          for (const pain of pains) {
+            for (const model of models) {
+              combos.push(makeCombo(person, task, pain, model));
+              if (combos.length >= 80) return combos;
+            }
+          }
+        }
+      }
+      return combos;
+    }
+
+    function comboId(person, task, pain, model) {
+      return [person, task, pain, model].join("::");
+    }
+
+    function makeCombo(person, task, pain, model) {
+      const id = comboId(person, task, pain, model);
+      return {
+        id,
+        person,
+        task,
+        pain,
+        model,
+        title: `${person} × ${task} × ${pain}`,
+        sentence: `为 ${person} 在“${task}”任务上解决“${pain}”问题，通过“${model}”赚钱。`
+      };
+    }
+
+    function switchView(view) {
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.view === view);
+      });
+      document.querySelectorAll(".view").forEach(section => {
+        section.classList.toggle("active", section.id === `view-${view}`);
+      });
+      if (view === "combos") renderCombos();
+      if (view === "score") renderScores();
+      if (view === "results") renderResults();
+    }
+
+    function renderCombos() {
+      const list = document.getElementById("comboList");
+      const search = (document.getElementById("comboSearch").value || "").trim().toLowerCase();
+      const combos = getCombos().filter(combo => {
+        return !search || `${combo.title} ${combo.sentence} ${combo.model}`.toLowerCase().includes(search);
+      });
+      updateCount();
+      if (!combos.length) {
+        list.innerHTML = `<div class="empty">请至少各选择一个人群、任务、痛点和商业模式。选完后这里会生成候选项目。</div>`;
+        return;
+      }
+      list.innerHTML = "";
+      combos.forEach(combo => {
+        const saved = state.saved.some(item => item.id === combo.id);
+        const card = document.createElement("article");
+        card.className = "combo";
+        card.innerHTML = `
+          <div>
+            <h3>${combo.title}</h3>
+            <p>${combo.sentence}</p>
+          </div>
+          <div class="kpi">
+            <span class="badge">${combo.person}</span>
+            <span class="badge">${combo.task}</span>
+            <span class="badge">${combo.pain}</span>
+            <span class="badge">${combo.model}</span>
+          </div>
+          <button class="${saved ? "secondary" : "primary"}">${saved ? "已收藏" : "收藏并打分"}</button>
+        `;
+        card.querySelector("button").addEventListener("click", () => saveCombo(combo));
+        list.appendChild(card);
+      });
+    }
+
+    function saveCombo(combo) {
+      if (state.saved.some(item => item.id === combo.id)) return;
+      const scores = {};
+      METRICS.forEach(([key]) => scores[key] = key === "cost" ? 3 : 5);
+      state.saved.push({ ...combo, scores });
+      persist();
+      renderCombos();
+    }
+
+    function renderScores() {
+      const list = document.getElementById("scoreList");
+      if (!state.saved.length) {
+        list.innerHTML = `<div class="empty">还没有收藏项目。先去“组合”页收藏几个候选项目，再回来打分。</div>`;
+        return;
+      }
+      list.innerHTML = "";
+      state.saved.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "combo";
+        const total = calcScore(item);
+        card.innerHTML = `
+          <div>
+            <h3>${item.title}</h3>
+            <p>${item.sentence}</p>
+          </div>
+          <div class="kpi"><span class="badge total-score">综合分 ${total}</span></div>
+          <div class="metrics"></div>
+          <button class="secondary danger">移除</button>
+        `;
+        const metrics = card.querySelector(".metrics");
+        METRICS.forEach(([key, label]) => {
+          const row = document.createElement("div");
+          row.className = "metric";
+          row.innerHTML = `
+            <label>${label}</label>
+            <div class="metric-row">
+              <input type="range" min="1" max="10" value="${item.scores[key]}">
+              <span class="score">${item.scores[key]}</span>
+            </div>
+          `;
+          const input = row.querySelector("input");
+          const score = row.querySelector(".score");
+          input.addEventListener("input", () => {
+            item.scores[key] = Number(input.value);
+            score.textContent = input.value;
+            card.querySelector(".total-score").textContent = `综合分 ${calcScore(item)}`;
+            persist();
+          });
+          metrics.appendChild(row);
+        });
+        card.querySelector("button").addEventListener("click", () => {
+          state.saved = state.saved.filter(saved => saved.id !== item.id);
+          persist();
+          renderScores();
+        });
+        list.appendChild(card);
+      });
+    }
+
+    function calcScore(item) {
+      const s = item.scores;
+      return s.interest + s.ability + s.willingness + s.demand + s.acquisition + s.cashflow + s.durability - s.cost;
+    }
+
+    function getRankedSaved() {
+      return [...state.saved].sort((a, b) => calcScore(b) - calcScore(a));
+    }
+
+    function renderResults() {
+      const list = document.getElementById("resultList");
+      if (!state.saved.length) {
+        list.innerHTML = `<div class="empty">还没有可排序的项目。收藏并打分后，这里会显示排名。</div>`;
+        return;
+      }
+      const ranked = getRankedSaved();
+      list.innerHTML = "";
+      ranked.forEach((item, index) => {
+        const card = document.createElement("article");
+        card.className = "combo";
+        card.innerHTML = `
+          <div>
+            <h3>${index + 1}. ${item.title}</h3>
+            <p>${item.sentence}</p>
+          </div>
+          <div class="kpi">
+            <span class="badge">综合分 ${calcScore(item)}</span>
+            <span class="badge">兴趣 ${item.scores.interest}</span>
+            <span class="badge">能力 ${item.scores.ability}</span>
+            <span class="badge">付费 ${item.scores.willingness}</span>
+            <span class="badge">需求 ${item.scores.demand}</span>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => switchView(tab.dataset.view));
+    });
+
+    document.querySelectorAll("[data-clear]").forEach(button => {
+      button.addEventListener("click", () => {
+        state.selected[button.dataset.clear] = [];
+        persist();
+        renderTagPanels();
+        renderCombos();
+      });
+    });
+
+    document.getElementById("goCombos").addEventListener("click", () => switchView("combos"));
+    document.getElementById("refreshCombos").addEventListener("click", renderCombos);
+    document.getElementById("comboSearch").addEventListener("input", renderCombos);
+    document.getElementById("clearSaved").addEventListener("click", () => {
+      state.saved = [];
+      persist();
+      renderScores();
+    });
+    document.getElementById("exportJson").addEventListener("click", () => {
+      const payload = JSON.stringify(getRankedSaved().map(item => ({
+        title: item.title,
+        sentence: item.sentence,
+        score: calcScore(item),
+        scores: item.scores
+      })), null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "project-selector-results.json";
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast("已生成导出文件");
+    });
+    document.getElementById("copyResults").addEventListener("click", async () => {
+      if (!state.saved.length) {
+        showToast("还没有结果可复制");
+        return;
+      }
+      const text = getRankedSaved().map((item, index) => {
+        return `${index + 1}. ${item.title}\n综合分：${calcScore(item)}\n${item.sentence}`;
+      }).join("\n\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("结果已复制");
+      } catch (error) {
+        showToast("复制失败，可尝试导出 JSON");
+      }
+    });
+
+    renderTagPanels();
+    renderCombos();
+  </script>
+</body>
+</html>
