@@ -3,24 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>第二事业项目选择器 MVP</title>
+  <title>需求挖掘选择器</title>
   <style>
     :root {
       --bg: #f6f7f9;
-      --panel: #ffffff;
-      --text: #18202a;
-      --muted: #6b7280;
-      --line: #dfe4ea;
+      --panel: #fff;
+      --text: #17202a;
+      --muted: #667085;
+      --line: #d9e0e8;
       --accent: #0f766e;
       --accent-soft: #d9f3ee;
-      --warm: #b45309;
-      --danger: #b91c1c;
-      --shadow: 0 10px 26px rgba(17, 24, 39, 0.08);
+      --ink-soft: #f2f4f7;
+      --warn: #a15c07;
+      --danger: #b42318;
+      --shadow: 0 10px 24px rgba(15, 23, 42, .08);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -30,24 +29,17 @@
       letter-spacing: 0;
     }
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+    button, input, textarea, select { font: inherit; }
 
-    .app {
-      min-height: 100vh;
-      padding-bottom: calc(96px + env(safe-area-inset-bottom));
-    }
+    .app { min-height: 100vh; padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
 
     header {
       position: sticky;
       top: 0;
-      z-index: 5;
-      background: rgba(246, 247, 249, 0.94);
-      backdrop-filter: blur(14px);
+      z-index: 4;
       border-bottom: 1px solid var(--line);
+      background: rgba(246, 247, 249, .95);
+      backdrop-filter: blur(14px);
     }
 
     .topbar {
@@ -58,14 +50,11 @@
       gap: 10px;
     }
 
-    h1 {
-      margin: 0;
-      font-size: 20px;
-      line-height: 1.25;
-    }
+    h1 { margin: 0; font-size: 20px; line-height: 1.25; }
+    h2, h3 { margin: 0; line-height: 1.3; }
+    p { margin: 0; }
 
     .subtitle {
-      margin: 0;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
@@ -82,43 +71,15 @@
       background: var(--panel);
       color: var(--muted);
       border-radius: 8px;
-      padding: 9px 8px;
-      min-height: 40px;
+      min-height: 42px;
+      padding: 8px 6px;
       cursor: pointer;
-    }
-
-    @media (max-width: 520px) {
-      .topbar {
-        padding: 12px 12px 10px;
-      }
-
-      h1 {
-        font-size: 18px;
-      }
-
-      .subtitle {
-        font-size: 12px;
-      }
-
-      main {
-        padding: 12px;
-      }
-
-      .tabs {
-        gap: 6px;
-      }
-
-      .tab {
-        min-height: 42px;
-        padding: 8px 6px;
-        font-size: 13px;
-      }
     }
 
     .tab.active {
       background: var(--text);
-      color: #fff;
       border-color: var(--text);
+      color: #fff;
     }
 
     main {
@@ -127,24 +88,11 @@
       padding: 16px;
     }
 
-    .view {
-      display: none;
-    }
+    .view { display: none; }
+    .view.active { display: block; }
 
-    .view.active {
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    @media (min-width: 760px) {
-      .grid.two {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      }
-    }
+    .grid { display: grid; gap: 14px; }
+    @media (min-width: 800px) { .grid.two { grid-template-columns: 1fr 1fr; } }
 
     .panel {
       background: var(--panel);
@@ -158,45 +106,29 @@
       padding: 14px;
       border-bottom: 1px solid var(--line);
       display: flex;
-      gap: 10px;
       justify-content: space-between;
       align-items: flex-start;
+      gap: 10px;
     }
 
-    .panel-title {
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.25;
-    }
+    .panel-title { font-size: 16px; }
+    .panel-note { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.45; }
 
-    .panel-note {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
+    .panel-body { padding: 14px; display: grid; gap: 14px; }
 
-    .panel-body {
-      padding: 14px;
-      display: grid;
-      gap: 14px;
-    }
-
-    .dimension {
-      display: grid;
-      gap: 9px;
-    }
-
-    .dimension-title {
-      font-weight: 700;
+    .notice {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 12px;
+      color: #334155;
       font-size: 13px;
+      line-height: 1.55;
     }
 
-    .chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .dimension { display: grid; gap: 9px; }
+    .dimension-title { font-weight: 800; font-size: 13px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
     .chip {
       border: 1px solid var(--line);
@@ -213,82 +145,58 @@
       background: var(--accent-soft);
       border-color: var(--accent);
       color: #064e45;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    .selection-bar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 6;
-      background: rgba(255, 255, 255, 0.96);
-      border-top: 1px solid var(--line);
-      backdrop-filter: blur(12px);
-    }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
-    .selection-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 10px 16px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: center;
-      padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    }
-
-    .selected-count {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
+    .primary, .secondary {
+      border-radius: 8px;
+      min-height: 40px;
+      padding: 9px 12px;
+      cursor: pointer;
     }
 
     .primary {
       border: 0;
       background: var(--accent);
       color: #fff;
-      border-radius: 8px;
-      min-height: 42px;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .primary:disabled,
-    .secondary:disabled {
-      cursor: not-allowed;
-      opacity: 0.55;
+      font-weight: 800;
     }
 
     .secondary {
       border: 1px solid var(--line);
       background: #fff;
       color: var(--text);
-      border-radius: 8px;
-      min-height: 38px;
-      padding: 8px 12px;
-      cursor: pointer;
     }
 
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    .primary:disabled, .secondary:disabled { opacity: .55; cursor: not-allowed; }
+
+    .bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 5;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(12px);
+    }
+
+    .bottom-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
       align-items: center;
-      justify-content: space-between;
     }
 
-    .search {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 8px;
-      min-height: 42px;
-      padding: 10px 12px;
-    }
+    .count { color: var(--muted); font-size: 13px; line-height: 1.4; }
 
-    .combo {
+    .card {
       display: grid;
       gap: 12px;
       padding: 14px;
@@ -297,108 +205,76 @@
       background: #fff;
     }
 
-    .combo h3 {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.35;
-    }
+    .card h3 { font-size: 15px; }
+    .card p, .small { color: var(--muted); font-size: 13px; line-height: 1.55; }
 
-    .combo p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-      font-size: 13px;
-    }
-
-    .metrics {
-      display: grid;
-      gap: 10px;
-    }
-
-    @media (min-width: 760px) {
-      .metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .metric {
-      display: grid;
-      gap: 6px;
-    }
-
-    .metric label {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .metric-row {
-      display: grid;
-      grid-template-columns: 1fr 34px;
-      gap: 10px;
-      align-items: center;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
-    }
-
-    .score {
-      font-weight: 800;
-      color: var(--accent);
-      text-align: right;
-    }
-
-    .empty {
-      color: var(--muted);
-      line-height: 1.6;
-      padding: 18px;
-      border: 1px dashed var(--line);
-      border-radius: 8px;
-      background: #fff;
-    }
-
-    .result-list {
-      display: grid;
-      gap: 12px;
-    }
-
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
     .badge {
       display: inline-flex;
       align-items: center;
       border-radius: 999px;
-      background: #f2f4f7;
+      background: var(--ink-soft);
       color: var(--muted);
       padding: 5px 9px;
       font-size: 12px;
     }
 
-    .kpi {
-      display: flex;
+    .keyword-list { display: grid; gap: 8px; }
+    .keyword {
+      display: grid;
+      grid-template-columns: 1fr auto;
       gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .formula {
-      padding: 12px;
-      background: #f8fafc;
+      align-items: center;
       border: 1px solid var(--line);
       border-radius: 8px;
-      line-height: 1.55;
-      font-size: 14px;
+      padding: 9px;
+      background: #fff;
     }
 
-    .notice {
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      border-radius: 8px;
+    .keyword span { line-height: 1.45; word-break: break-word; }
+
+    .platforms { display: grid; gap: 8px; }
+    @media (min-width: 680px) { .platforms { grid-template-columns: repeat(2, 1fr); } }
+
+    .platform {
+      display: grid;
+      gap: 7px;
       padding: 12px;
-      color: #334155;
-      font-size: 13px;
-      line-height: 1.55;
-      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
     }
 
+    .platform a { color: var(--accent); text-decoration: none; font-weight: 800; }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 10px 11px;
+    }
+
+    textarea { min-height: 86px; resize: vertical; line-height: 1.5; }
+
+    .form-grid { display: grid; gap: 10px; }
+    @media (min-width: 760px) { .form-grid.two { grid-template-columns: 1fr 1fr; } }
+
+    .metric { display: grid; gap: 6px; }
+    .metric label { color: var(--muted); font-size: 12px; }
+    input[type="range"] { accent-color: var(--accent); }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fff;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .danger { color: var(--danger); }
     .toast {
       position: fixed;
       left: 50%;
@@ -413,21 +289,20 @@
       box-shadow: var(--shadow);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.18s ease;
+      transition: opacity .18s ease;
       max-width: calc(100vw - 32px);
       text-align: center;
     }
+    .toast.show { opacity: 1; }
 
-    .toast.show {
-      opacity: 1;
-    }
-
-    .formula b {
-      color: var(--accent);
-    }
-
-    .danger {
-      color: var(--danger);
+    @media (max-width: 520px) {
+      .topbar { padding: 12px 12px 10px; }
+      h1 { font-size: 18px; }
+      main { padding: 12px; }
+      .tabs { gap: 6px; }
+      .tab { font-size: 13px; }
+      .panel-head { padding: 12px; }
+      .panel-body { padding: 12px; }
     }
   </style>
 </head>
@@ -436,13 +311,13 @@
     <header>
       <div class="topbar">
         <div>
-          <h1>第二事业项目选择器 MVP</h1>
-          <p class="subtitle">按“人群 × 任务 × 痛点 × 商业模式”生成候选项目，并用 8 个指标打分排序。</p>
+          <h1>需求挖掘选择器</h1>
+          <p class="subtitle">先生成市场搜索关键词，再记录真实案例、用户原话和付费信号，最后筛出值得模仿的项目。</p>
         </div>
         <nav class="tabs" aria-label="视图切换">
           <button class="tab active" data-view="select">筛选</button>
-          <button class="tab" data-view="combos">组合</button>
-          <button class="tab" data-view="score">打分</button>
+          <button class="tab" data-view="keywords">关键词</button>
+          <button class="tab" data-view="evidence">证据</button>
           <button class="tab" data-view="results">结果</button>
         </nav>
       </div>
@@ -450,13 +325,13 @@
 
     <main>
       <section class="view active" id="view-select">
-        <div class="notice">离线可用。发到手机后用浏览器打开，筛选和打分会保存在当前手机浏览器里。</div>
+        <div class="notice">使用方式：选择一个人群、一个任务、一个痛点，先得到关键词包；去平台搜索真实内容后，把项目、评论、价格、销量等证据记回来。</div>
         <div class="grid two">
           <article class="panel">
             <div class="panel-head">
               <div>
-                <h2 class="panel-title">人群标签</h2>
-                <p class="panel-note">维度内尽量 MECE，维度间允许组合。</p>
+                <h2 class="panel-title">人群</h2>
+                <p class="panel-note">谁正在遇到这个需求。</p>
               </div>
               <button class="secondary" data-clear="people">清空</button>
             </div>
@@ -466,8 +341,8 @@
           <article class="panel">
             <div class="panel-head">
               <div>
-                <h2 class="panel-title">任务标签</h2>
-                <p class="panel-note">用户或组织正在试图完成的结果。</p>
+                <h2 class="panel-title">任务</h2>
+                <p class="panel-note">他正在试图完成什么结果。</p>
               </div>
               <button class="secondary" data-clear="tasks">清空</button>
             </div>
@@ -477,8 +352,8 @@
           <article class="panel">
             <div class="panel-head">
               <div>
-                <h2 class="panel-title">痛点标签</h2>
-                <p class="panel-note">任务无法顺利完成的主要阻碍。</p>
+                <h2 class="panel-title">痛点</h2>
+                <p class="panel-note">为什么现在做不好、做得慢、做得贵或不敢做。</p>
               </div>
               <button class="secondary" data-clear="pains">清空</button>
             </div>
@@ -488,42 +363,84 @@
           <article class="panel">
             <div class="panel-head">
               <div>
-                <h2 class="panel-title">商业模式</h2>
-                <p class="panel-note">你交付价值并收钱的方式。</p>
+                <h2 class="panel-title">市场信号</h2>
+                <p class="panel-note">优先找这些证据，不急着判断项目。</p>
               </div>
-              <button class="secondary" data-clear="models">清空</button>
             </div>
-            <div class="panel-body" id="modelsPanel"></div>
+            <div class="panel-body">
+              <div class="card">
+                <h3>你要找的不是灵感，是证据</h3>
+                <p>优先记录：有人抱怨、有人求推荐、有人已经在卖、有人评论购买、有人复购、有人愿意为节省时间或降低风险付费。</p>
+                <div class="badges">
+                  <span class="badge">用户原话</span>
+                  <span class="badge">竞品价格</span>
+                  <span class="badge">销量/评论</span>
+                  <span class="badge">交付形式</span>
+                  <span class="badge">获客渠道</span>
+                </div>
+              </div>
+            </div>
           </article>
         </div>
       </section>
 
-      <section class="view" id="view-combos">
+      <section class="view" id="view-keywords">
         <article class="panel">
           <div class="panel-head">
             <div>
-              <h2 class="panel-title">候选项目组合</h2>
-              <p class="panel-note">默认最多生成 80 个组合，避免手机端过载。你可以回到筛选页缩小范围。</p>
+              <h2 class="panel-title">关键词包</h2>
+              <p class="panel-note">用这些词去小红书、抖音、知乎、B站、淘宝、公众号、应用市场等地方找真实项目。</p>
             </div>
-            <button class="secondary" id="refreshCombos">刷新组合</button>
+            <button class="secondary" id="copyAllKeywords">复制全部</button>
           </div>
           <div class="panel-body">
-            <input class="search" id="comboSearch" placeholder="搜索组合关键词，例如 AI、获客、宝妈、咨询">
-            <div id="comboList" class="result-list"></div>
+            <div id="hypothesisList" class="grid"></div>
           </div>
         </article>
       </section>
 
-      <section class="view" id="view-score">
+      <section class="view" id="view-evidence">
         <article class="panel">
           <div class="panel-head">
             <div>
-              <h2 class="panel-title">项目打分</h2>
-              <p class="panel-note">先在组合页收藏候选项目，再在这里调整分数。</p>
+              <h2 class="panel-title">市场证据记录</h2>
+              <p class="panel-note">把你在市场里找到的项目、评论、价格和信号记下来。</p>
             </div>
-            <button class="secondary" id="clearSaved">清空收藏</button>
+            <button class="secondary" id="clearEvidence">清空证据</button>
           </div>
-          <div class="panel-body" id="scoreList"></div>
+          <div class="panel-body">
+            <form id="evidenceForm" class="form-grid">
+              <div class="form-grid two">
+                <input id="evTitle" placeholder="项目/内容/产品名称">
+                <select id="evType">
+                  <option>用户抱怨</option>
+                  <option>求推荐/求方案</option>
+                  <option>已存在产品</option>
+                  <option>付费服务</option>
+                  <option>课程/社群</option>
+                  <option>工具/SaaS</option>
+                </select>
+              </div>
+              <div class="form-grid two">
+                <input id="evPlatform" placeholder="平台：小红书/抖音/淘宝/知乎等">
+                <input id="evPrice" placeholder="价格/销量/评论数，可空">
+              </div>
+              <input id="evUrl" placeholder="链接，可空">
+              <textarea id="evQuote" placeholder="用户原话、卖点、评论、你观察到的付费信号"></textarea>
+              <div class="form-grid two">
+                <div class="metric">
+                  <label>证据强度：抱怨多、价格明确、销量/评论多则高</label>
+                  <input id="evStrength" type="range" min="1" max="10" value="5">
+                </div>
+                <div class="metric">
+                  <label>模仿可行性：你能低成本复刻或差异化则高</label>
+                  <input id="evFit" type="range" min="1" max="10" value="5">
+                </div>
+              </div>
+              <button class="primary" type="submit">保存证据</button>
+            </form>
+            <div id="evidenceList" class="grid"></div>
+          </div>
         </article>
       </section>
 
@@ -531,172 +448,98 @@
         <article class="panel">
           <div class="panel-head">
             <div>
-              <h2 class="panel-title">排序结果</h2>
-              <p class="panel-note">综合分越高，越值得进入访谈、验证和小规模试卖。</p>
+              <h2 class="panel-title">挖掘结果</h2>
+              <p class="panel-note">这里按市场证据排序，不按想象排序。</p>
             </div>
             <div class="toolbar">
+              <button class="secondary" id="copyReport">复制报告</button>
               <button class="secondary" id="exportJson">导出 JSON</button>
-              <button class="secondary" id="copyResults">复制结果</button>
             </div>
           </div>
           <div class="panel-body">
-            <div class="formula">
-              综合分 = 兴趣匹配 + 能力匹配 + 付费意愿 + 需求强度 + 获客可行性 + 回款速度 + 可持续性 - 启动成本压力
-            </div>
-            <div id="resultList" class="result-list"></div>
+            <div class="notice">下一步判断标准：同类证据出现 5 条以上、至少 2 个已付费产品、能找到清晰价格或成交痕迹，再进入模仿和小规模试卖。</div>
+            <div id="resultList" class="grid"></div>
           </div>
         </article>
       </section>
     </main>
 
-    <div class="selection-bar">
-      <div class="selection-inner">
-        <div class="selected-count" id="selectedCount">已选 0 个标签</div>
-        <button class="primary" id="goCombos">生成组合</button>
+    <div class="bottom-bar">
+      <div class="bottom-inner">
+        <div class="count" id="selectedCount">已选 0 个标签</div>
+        <button class="primary" id="goKeywords">生成关键词</button>
       </div>
     </div>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div>
 
   <script>
     const DATA = {
       people: [
-        {
-          title: "生命阶段",
-          tags: ["大学生", "职场新人", "职场中层", "中年转型者", "退休前人群", "银发老人"]
-        },
-        {
-          title: "家庭角色",
-          tags: ["单身者", "情侣/新婚", "备孕/孕产", "宝妈宝爸", "子女照护者", "家庭财务负责人"]
-        },
-        {
-          title: "职业角色",
-          tags: ["程序员", "产品经理", "设计师", "运营", "销售", "HR", "财务", "教师", "医生", "律师", "咨询顾问", "自媒体人"]
-        },
-        {
-          title: "组织角色",
-          tags: ["个体户", "小微企业主", "创业者", "部门管理者", "企业采购负责人", "一线执行者"]
-        },
-        {
-          title: "地域状态",
-          tags: ["一线城市人群", "新一线人群", "县城人群", "返乡人群", "留学生", "跨境从业者"]
-        },
-        {
-          title: "现实约束",
-          tags: ["时间极少者", "预算敏感者", "技能薄弱者", "信息弱势者", "社恐人群", "不愿露脸者"]
-        }
+        { title: "生命阶段", tags: ["大学生", "职场新人", "职场中层", "中年转型者", "退休前人群", "银发老人"] },
+        { title: "家庭角色", tags: ["单身者", "情侣/新婚", "备孕/孕产", "宝妈宝爸", "子女照护者", "家庭财务负责人"] },
+        { title: "职业角色", tags: ["程序员", "产品经理", "设计师", "运营", "销售", "HR", "财务", "教师", "医生", "律师", "咨询顾问", "自媒体人"] },
+        { title: "组织角色", tags: ["个体户", "小微企业主", "创业者", "部门管理者", "企业采购负责人", "一线执行者"] },
+        { title: "地域状态", tags: ["一线城市人群", "新一线人群", "县城人群", "返乡人群", "留学生", "跨境从业者"] },
+        { title: "现实约束", tags: ["时间极少者", "预算敏感者", "技能薄弱者", "信息弱势者", "社恐人群", "不愿露脸者"] }
       ],
       tasks: [
-        {
-          title: "个人增收",
-          tags: ["找工作", "涨薪晋升", "转行", "副业变现", "投资理财", "个人品牌"]
-        },
-        {
-          title: "企业经营",
-          tags: ["获客", "销售转化", "客服", "招聘", "培训", "财税合规", "库存管理", "品牌营销"]
-        },
-        {
-          title: "效率提升",
-          tags: ["AI 自动化", "知识管理", "项目管理", "数据分析", "写作产出", "流程优化"]
-        },
-        {
-          title: "生活决策",
-          tags: ["买房", "装修", "保险配置", "旅游规划", "数码选购", "教育选择"]
-        },
-        {
-          title: "健康家庭",
-          tags: ["减脂塑形", "睡眠改善", "慢病管理", "心理调节", "育儿", "升学规划", "养老照护"]
-        },
-        {
-          title: "社交身份",
-          tags: ["找圈子", "人脉拓展", "表达提升", "审美提升", "兴趣活动", "影响力建设"]
-        }
+        { title: "个人增收", tags: ["找工作", "涨薪晋升", "转行", "副业变现", "投资理财", "个人品牌"] },
+        { title: "企业经营", tags: ["获客", "销售转化", "客服", "招聘", "培训", "财税合规", "库存管理", "品牌营销"] },
+        { title: "效率提升", tags: ["AI 自动化", "知识管理", "项目管理", "数据分析", "写作产出", "流程优化"] },
+        { title: "生活决策", tags: ["买房", "装修", "保险配置", "旅游规划", "数码选购", "教育选择"] },
+        { title: "健康家庭", tags: ["减脂塑形", "睡眠改善", "慢病管理", "心理调节", "育儿", "升学规划", "养老照护"] },
+        { title: "社交身份", tags: ["找圈子", "人脉拓展", "表达提升", "审美提升", "兴趣活动", "影响力建设"] }
       ],
       pains: [
-        {
-          title: "认知阻碍",
-          tags: ["不知道路径", "信息过载", "真假难辨", "缺少案例", "ROI 不清楚"]
-        },
-        {
-          title: "能力阻碍",
-          tags: ["不会做", "做不好", "缺少模板", "缺少反馈", "缺少专业判断"]
-        },
-        {
-          title: "资源阻碍",
-          tags: ["没人脉", "没渠道", "没客户", "没供应链", "找不到专家"]
-        },
-        {
-          title: "执行阻碍",
-          tags: ["太忙", "重复劳动多", "无法坚持", "缺少监督", "流程复杂"]
-        },
-        {
-          title: "心理阻碍",
-          tags: ["焦虑", "孤独", "拖延", "羞耻感", "缺少确定感"]
-        },
-        {
-          title: "交易阻碍",
-          tags: ["怕被骗", "服务不透明", "成本高", "试错贵", "怕选错"]
-        }
-      ],
-      models: [
-        {
-          title: "低成本启动",
-          tags: ["咨询服务", "陪跑教练", "课程训练营", "模板资料包", "内容广告", "社群会员"]
-        },
-        {
-          title: "产品化交付",
-          tags: ["SaaS 工具", "小程序/App", "AI Agent", "自动化工作流", "数据报告", "订阅内容"]
-        },
-        {
-          title: "交易与渠道",
-          tags: ["电商零售", "私域团购", "带货佣金", "代理分销", "平台撮合", "线索分发"]
-        },
-        {
-          title: "长期资产",
-          tags: ["个人 IP", "品牌产品", "版权授权", "加盟/SOP 授权", "项目孵化", "股权/持有"]
-        }
+        { title: "认知阻碍", tags: ["不知道路径", "信息过载", "真假难辨", "缺少案例", "ROI 不清楚"] },
+        { title: "能力阻碍", tags: ["不会做", "做不好", "缺少模板", "缺少反馈", "缺少专业判断"] },
+        { title: "资源阻碍", tags: ["没人脉", "没渠道", "没客户", "没供应链", "找不到专家"] },
+        { title: "执行阻碍", tags: ["太忙", "重复劳动多", "无法坚持", "缺少监督", "流程复杂"] },
+        { title: "心理阻碍", tags: ["焦虑", "孤独", "拖延", "羞耻感", "缺少确定感"] },
+        { title: "交易阻碍", tags: ["怕被骗", "服务不透明", "成本高", "试错贵", "怕选错"] }
       ]
     };
 
-    const METRICS = [
-      ["interest", "兴趣匹配"],
-      ["ability", "能力匹配"],
-      ["willingness", "付费意愿"],
-      ["demand", "需求强度"],
-      ["acquisition", "获客可行性"],
-      ["cost", "启动成本压力"],
-      ["cashflow", "回款速度"],
-      ["durability", "可持续性"]
+    const PLATFORMS = [
+      ["小红书", "https://www.xiaohongshu.com/search_result?keyword="],
+      ["知乎", "https://www.zhihu.com/search?type=content&q="],
+      ["B站", "https://search.bilibili.com/all?keyword="],
+      ["淘宝", "https://s.taobao.com/search?q="],
+      ["百度", "https://www.baidu.com/s?wd="],
+      ["微信搜一搜", "https://weixin.sogou.com/weixin?type=2&query="],
+      ["应用市场线索", "https://www.baidu.com/s?wd="],
+      ["抖音线索", "https://www.baidu.com/s?wd="]
     ];
 
-    const state = JSON.parse(localStorage.getItem("projectSelectorState") || "null") || {
-      selected: { people: [], tasks: [], pains: [], models: [] },
-      saved: []
+    const state = JSON.parse(localStorage.getItem("demandMinerState") || "null") || {
+      selected: { people: [], tasks: [], pains: [] },
+      evidence: []
     };
 
     function persist() {
-      localStorage.setItem("projectSelectorState", JSON.stringify(state));
+      localStorage.setItem("demandMinerState", JSON.stringify(state));
     }
 
     function showToast(message) {
       const toast = document.getElementById("toast");
       toast.textContent = message;
       toast.classList.add("show");
-      window.clearTimeout(showToast.timer);
-      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
     function renderTagPanels() {
       renderGroup("people", "peoplePanel");
       renderGroup("tasks", "tasksPanel");
       renderGroup("pains", "painsPanel");
-      renderGroup("models", "modelsPanel");
       updateCount();
     }
 
-    function renderGroup(type, containerId) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
+    function renderGroup(type, id) {
+      const panel = document.getElementById(id);
+      panel.innerHTML = "";
       DATA[type].forEach(group => {
         const wrap = document.createElement("div");
         wrap.className = "dimension";
@@ -713,7 +556,7 @@
           chips.appendChild(button);
         });
         wrap.append(title, chips);
-        container.appendChild(wrap);
+        panel.appendChild(wrap);
       });
     }
 
@@ -724,247 +567,271 @@
       else list.push(tag);
       persist();
       renderTagPanels();
-      renderCombos();
+      renderKeywords();
     }
 
     function updateCount() {
       const total = Object.values(state.selected).reduce((sum, list) => sum + list.length, 0);
-      const comboCount = getCombos().length;
-      document.getElementById("selectedCount").textContent = `已选 ${total} 个标签，可生成 ${comboCount} 个组合`;
-      document.getElementById("goCombos").disabled = comboCount === 0;
+      const count = getHypotheses().length;
+      document.getElementById("selectedCount").textContent = `已选 ${total} 个标签，可生成 ${count} 个需求假设`;
+      document.getElementById("goKeywords").disabled = count === 0;
     }
 
-    function getCombos() {
-      const { people, tasks, pains, models } = state.selected;
-      if (!people.length || !tasks.length || !pains.length || !models.length) return [];
-      const combos = [];
+    function getHypotheses() {
+      const { people, tasks, pains } = state.selected;
+      if (!people.length || !tasks.length || !pains.length) return [];
+      const output = [];
       for (const person of people) {
         for (const task of tasks) {
           for (const pain of pains) {
-            for (const model of models) {
-              combos.push(makeCombo(person, task, pain, model));
-              if (combos.length >= 80) return combos;
-            }
+            output.push({ id: [person, task, pain].join("::"), person, task, pain });
+            if (output.length >= 40) return output;
           }
         }
       }
-      return combos;
+      return output;
     }
 
-    function comboId(person, task, pain, model) {
-      return [person, task, pain, model].join("::");
+    function buildKeywords(h) {
+      const base = `${h.person} ${h.task}`;
+      return [
+        `${base} ${h.pain}`,
+        `${h.person} ${h.task} 怎么办`,
+        `${h.person} ${h.task} 避坑`,
+        `${h.person} ${h.task} 推荐`,
+        `${h.task} ${h.pain} 工具`,
+        `${h.task} ${h.pain} 课程`,
+        `${h.task} ${h.pain} 服务`,
+        `${h.task} 模板 ${h.person}`,
+        `${h.task} 案例 ${h.person}`,
+        `${h.task} 外包 ${h.person}`,
+        `${h.task} 多少钱`,
+        `${h.task} 真实评价`
+      ];
     }
 
-    function makeCombo(person, task, pain, model) {
-      const id = comboId(person, task, pain, model);
-      return {
-        id,
-        person,
-        task,
-        pain,
-        model,
-        title: `${person} × ${task} × ${pain}`,
-        sentence: `为 ${person} 在“${task}”任务上解决“${pain}”问题，通过“${model}”赚钱。`
-      };
+    function platformUrl(platform, keyword) {
+      let q = keyword;
+      if (platform === "应用市场线索") q = `${keyword} app OR 小程序 OR SaaS`;
+      if (platform === "抖音线索") q = `site:douyin.com ${keyword}`;
+      return PLATFORMS.find(item => item[0] === platform)[1] + encodeURIComponent(q);
     }
 
     function switchView(view) {
-      document.querySelectorAll(".tab").forEach(tab => {
-        tab.classList.toggle("active", tab.dataset.view === view);
-      });
-      document.querySelectorAll(".view").forEach(section => {
-        section.classList.toggle("active", section.id === `view-${view}`);
-      });
-      if (view === "combos") renderCombos();
-      if (view === "score") renderScores();
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.view === view));
+      document.querySelectorAll(".view").forEach(section => section.classList.toggle("active", section.id === `view-${view}`));
+      if (view === "keywords") renderKeywords();
+      if (view === "evidence") renderEvidence();
       if (view === "results") renderResults();
     }
 
-    function renderCombos() {
-      const list = document.getElementById("comboList");
-      const search = (document.getElementById("comboSearch").value || "").trim().toLowerCase();
-      const combos = getCombos().filter(combo => {
-        return !search || `${combo.title} ${combo.sentence} ${combo.model}`.toLowerCase().includes(search);
-      });
+    function renderKeywords() {
+      const root = document.getElementById("hypothesisList");
+      const hypotheses = getHypotheses();
       updateCount();
-      if (!combos.length) {
-        list.innerHTML = `<div class="empty">请至少各选择一个人群、任务、痛点和商业模式。选完后这里会生成候选项目。</div>`;
+      if (!hypotheses.length) {
+        root.innerHTML = `<div class="empty">请至少各选择一个人群、任务、痛点。这里不会直接给项目，而是生成可用于市场搜索的关键词包。</div>`;
         return;
       }
-      list.innerHTML = "";
-      combos.forEach(combo => {
-        const saved = state.saved.some(item => item.id === combo.id);
+      root.innerHTML = "";
+      hypotheses.forEach(h => {
+        const keywords = buildKeywords(h);
         const card = document.createElement("article");
-        card.className = "combo";
+        card.className = "card";
         card.innerHTML = `
           <div>
-            <h3>${combo.title}</h3>
-            <p>${combo.sentence}</p>
+            <h3>${h.person} × ${h.task} × ${h.pain}</h3>
+            <p>需求假设：${h.person} 在“${h.task}”上因为“${h.pain}”产生了可能付费的解决需求。</p>
           </div>
-          <div class="kpi">
-            <span class="badge">${combo.person}</span>
-            <span class="badge">${combo.task}</span>
-            <span class="badge">${combo.pain}</span>
-            <span class="badge">${combo.model}</span>
+          <div class="badges">
+            <span class="badge">${h.person}</span>
+            <span class="badge">${h.task}</span>
+            <span class="badge">${h.pain}</span>
           </div>
-          <button class="${saved ? "secondary" : "primary"}">${saved ? "已收藏" : "收藏并打分"}</button>
+          <div class="keyword-list"></div>
+          <div class="platforms"></div>
         `;
-        card.querySelector("button").addEventListener("click", () => saveCombo(combo));
-        list.appendChild(card);
-      });
-    }
-
-    function saveCombo(combo) {
-      if (state.saved.some(item => item.id === combo.id)) return;
-      const scores = {};
-      METRICS.forEach(([key]) => scores[key] = key === "cost" ? 3 : 5);
-      state.saved.push({ ...combo, scores });
-      persist();
-      renderCombos();
-    }
-
-    function renderScores() {
-      const list = document.getElementById("scoreList");
-      if (!state.saved.length) {
-        list.innerHTML = `<div class="empty">还没有收藏项目。先去“组合”页收藏几个候选项目，再回来打分。</div>`;
-        return;
-      }
-      list.innerHTML = "";
-      state.saved.forEach(item => {
-        const card = document.createElement("article");
-        card.className = "combo";
-        const total = calcScore(item);
-        card.innerHTML = `
-          <div>
-            <h3>${item.title}</h3>
-            <p>${item.sentence}</p>
-          </div>
-          <div class="kpi"><span class="badge total-score">综合分 ${total}</span></div>
-          <div class="metrics"></div>
-          <button class="secondary danger">移除</button>
-        `;
-        const metrics = card.querySelector(".metrics");
-        METRICS.forEach(([key, label]) => {
+        const keywordList = card.querySelector(".keyword-list");
+        keywords.forEach(keyword => {
           const row = document.createElement("div");
-          row.className = "metric";
-          row.innerHTML = `
-            <label>${label}</label>
-            <div class="metric-row">
-              <input type="range" min="1" max="10" value="${item.scores[key]}">
-              <span class="score">${item.scores[key]}</span>
-            </div>
-          `;
-          const input = row.querySelector("input");
-          const score = row.querySelector(".score");
-          input.addEventListener("input", () => {
-            item.scores[key] = Number(input.value);
-            score.textContent = input.value;
-            card.querySelector(".total-score").textContent = `综合分 ${calcScore(item)}`;
-            persist();
-          });
-          metrics.appendChild(row);
+          row.className = "keyword";
+          row.innerHTML = `<span>${keyword}</span><button class="secondary">复制</button>`;
+          row.querySelector("button").addEventListener("click", () => copyText(keyword, "已复制关键词"));
+          keywordList.appendChild(row);
         });
+        const platforms = card.querySelector(".platforms");
+        PLATFORMS.forEach(([name]) => {
+          const box = document.createElement("div");
+          box.className = "platform";
+          box.innerHTML = `<strong>${name}</strong><a target="_blank" rel="noreferrer">用第一个关键词搜索</a><span class="small">打开后继续替换上面的关键词。</span>`;
+          box.querySelector("a").href = platformUrl(name, keywords[0]);
+          platforms.appendChild(box);
+        });
+        root.appendChild(card);
+      });
+    }
+
+    function renderEvidence() {
+      const list = document.getElementById("evidenceList");
+      if (!state.evidence.length) {
+        list.innerHTML = `<div class="empty">还没有市场证据。去“关键词”页搜索后，把你看到的产品、评论、报价、销量或用户原话记到这里。</div>`;
+        return;
+      }
+      list.innerHTML = "";
+      getRankedEvidence().forEach(item => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+          <div>
+            <h3>${item.title || "未命名证据"}</h3>
+            <p>${item.quote || "没有记录说明"}</p>
+          </div>
+          <div class="badges">
+            <span class="badge">${item.type}</span>
+            <span class="badge">${item.platform || "未知平台"}</span>
+            <span class="badge">强度 ${item.strength}</span>
+            <span class="badge">可行性 ${item.fit}</span>
+            <span class="badge">总分 ${scoreEvidence(item)}</span>
+          </div>
+          ${item.price ? `<p class="small">价格/销量/评论：${item.price}</p>` : ""}
+          ${item.url ? `<a href="${item.url}" target="_blank" rel="noreferrer">打开链接</a>` : ""}
+          <button class="secondary danger">删除</button>
+        `;
         card.querySelector("button").addEventListener("click", () => {
-          state.saved = state.saved.filter(saved => saved.id !== item.id);
+          state.evidence = state.evidence.filter(ev => ev.id !== item.id);
           persist();
-          renderScores();
+          renderEvidence();
         });
         list.appendChild(card);
       });
     }
 
-    function calcScore(item) {
-      const s = item.scores;
-      return s.interest + s.ability + s.willingness + s.demand + s.acquisition + s.cashflow + s.durability - s.cost;
+    function scoreEvidence(item) {
+      return Number(item.strength) + Number(item.fit);
     }
 
-    function getRankedSaved() {
-      return [...state.saved].sort((a, b) => calcScore(b) - calcScore(a));
+    function getRankedEvidence() {
+      return [...state.evidence].sort((a, b) => scoreEvidence(b) - scoreEvidence(a));
+    }
+
+    function buildReport() {
+      const hypotheses = getHypotheses();
+      const lines = [];
+      lines.push("需求挖掘报告");
+      lines.push("");
+      lines.push("当前需求假设：");
+      if (!hypotheses.length) lines.push("暂无");
+      hypotheses.slice(0, 10).forEach((h, i) => lines.push(`${i + 1}. ${h.person} × ${h.task} × ${h.pain}`));
+      lines.push("");
+      lines.push("市场证据：");
+      if (!state.evidence.length) lines.push("暂无");
+      getRankedEvidence().forEach((item, i) => {
+        lines.push(`${i + 1}. ${item.title || "未命名证据"}｜总分 ${scoreEvidence(item)}｜${item.platform || "未知平台"}｜${item.type}`);
+        if (item.price) lines.push(`价格/销量/评论：${item.price}`);
+        if (item.quote) lines.push(`观察：${item.quote}`);
+        if (item.url) lines.push(`链接：${item.url}`);
+      });
+      return lines.join("\n");
     }
 
     function renderResults() {
       const list = document.getElementById("resultList");
-      if (!state.saved.length) {
-        list.innerHTML = `<div class="empty">还没有可排序的项目。收藏并打分后，这里会显示排名。</div>`;
+      if (!state.evidence.length) {
+        list.innerHTML = `<div class="empty">结果页会根据你记录的市场证据排序。现在先去关键词页搜索，再回来记录证据。</div>`;
         return;
       }
-      const ranked = getRankedSaved();
       list.innerHTML = "";
-      ranked.forEach((item, index) => {
+      getRankedEvidence().forEach((item, index) => {
         const card = document.createElement("article");
-        card.className = "combo";
+        card.className = "card";
         card.innerHTML = `
           <div>
-            <h3>${index + 1}. ${item.title}</h3>
-            <p>${item.sentence}</p>
+            <h3>${index + 1}. ${item.title || "未命名证据"}</h3>
+            <p>${item.quote || "没有记录说明"}</p>
           </div>
-          <div class="kpi">
-            <span class="badge">综合分 ${calcScore(item)}</span>
-            <span class="badge">兴趣 ${item.scores.interest}</span>
-            <span class="badge">能力 ${item.scores.ability}</span>
-            <span class="badge">付费 ${item.scores.willingness}</span>
-            <span class="badge">需求 ${item.scores.demand}</span>
+          <div class="badges">
+            <span class="badge">总分 ${scoreEvidence(item)}</span>
+            <span class="badge">证据强度 ${item.strength}</span>
+            <span class="badge">模仿可行性 ${item.fit}</span>
+            <span class="badge">${item.type}</span>
           </div>
+          <p class="small">下一步：找 3 个同类案例、拆价格和交付形式、判断你能否用更窄人群或更轻交付切入。</p>
         `;
         list.appendChild(card);
       });
     }
 
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.addEventListener("click", () => switchView(tab.dataset.view));
-    });
+    async function copyText(text, okMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(okMessage || "已复制");
+      } catch (error) {
+        showToast("复制失败，请手动长按选择");
+      }
+    }
 
+    document.querySelectorAll(".tab").forEach(tab => tab.addEventListener("click", () => switchView(tab.dataset.view)));
     document.querySelectorAll("[data-clear]").forEach(button => {
       button.addEventListener("click", () => {
         state.selected[button.dataset.clear] = [];
         persist();
         renderTagPanels();
-        renderCombos();
+        renderKeywords();
       });
     });
 
-    document.getElementById("goCombos").addEventListener("click", () => switchView("combos"));
-    document.getElementById("refreshCombos").addEventListener("click", renderCombos);
-    document.getElementById("comboSearch").addEventListener("input", renderCombos);
-    document.getElementById("clearSaved").addEventListener("click", () => {
-      state.saved = [];
-      persist();
-      renderScores();
+    document.getElementById("goKeywords").addEventListener("click", () => switchView("keywords"));
+    document.getElementById("copyAllKeywords").addEventListener("click", () => {
+      const text = getHypotheses().flatMap(buildKeywords).join("\n");
+      if (!text) return showToast("还没有关键词");
+      copyText(text, "已复制全部关键词");
     });
+
+    document.getElementById("evidenceForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const item = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+        title: document.getElementById("evTitle").value.trim(),
+        type: document.getElementById("evType").value,
+        platform: document.getElementById("evPlatform").value.trim(),
+        price: document.getElementById("evPrice").value.trim(),
+        url: document.getElementById("evUrl").value.trim(),
+        quote: document.getElementById("evQuote").value.trim(),
+        strength: Number(document.getElementById("evStrength").value),
+        fit: Number(document.getElementById("evFit").value),
+        createdAt: new Date().toISOString()
+      };
+      if (!item.title && !item.quote) return showToast("至少写一个名称或观察");
+      state.evidence.push(item);
+      persist();
+      event.target.reset();
+      document.getElementById("evStrength").value = 5;
+      document.getElementById("evFit").value = 5;
+      renderEvidence();
+      showToast("证据已保存");
+    });
+
+    document.getElementById("clearEvidence").addEventListener("click", () => {
+      if (!confirm("确定清空所有证据吗？")) return;
+      state.evidence = [];
+      persist();
+      renderEvidence();
+    });
+
+    document.getElementById("copyReport").addEventListener("click", () => copyText(buildReport(), "报告已复制"));
     document.getElementById("exportJson").addEventListener("click", () => {
-      const payload = JSON.stringify(getRankedSaved().map(item => ({
-        title: item.title,
-        sentence: item.sentence,
-        score: calcScore(item),
-        scores: item.scores
-      })), null, 2);
-      const blob = new Blob([payload], { type: "application/json" });
+      const blob = new Blob([JSON.stringify({ selected: state.selected, evidence: getRankedEvidence() }, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "project-selector-results.json";
+      link.download = "demand-mining-report.json";
       link.click();
       URL.revokeObjectURL(url);
       showToast("已生成导出文件");
     });
-    document.getElementById("copyResults").addEventListener("click", async () => {
-      if (!state.saved.length) {
-        showToast("还没有结果可复制");
-        return;
-      }
-      const text = getRankedSaved().map((item, index) => {
-        return `${index + 1}. ${item.title}\n综合分：${calcScore(item)}\n${item.sentence}`;
-      }).join("\n\n");
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast("结果已复制");
-      } catch (error) {
-        showToast("复制失败，可尝试导出 JSON");
-      }
-    });
 
     renderTagPanels();
-    renderCombos();
+    renderKeywords();
   </script>
 </body>
 </html>
